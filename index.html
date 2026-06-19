@@ -1,0 +1,1480 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#7f7caf" />
+  <title>推し活テンプレメーカー モニター版</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #f0e9f8;
+      --card: rgba(255,255,255,.92);
+      --text: #504b59;
+      --muted: #878092;
+      --line: #e6e0ee;
+      --accent: #8179b8;
+      --accent-dark: #655f9f;
+      --pink: #f5a8c9;
+      --pink-strong: #e75b9f;
+      --shadow: 0 18px 48px rgba(72, 60, 98, .14);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at 10% 6%, rgba(129, 121, 184, .18), transparent 28%),
+        radial-gradient(circle at 92% 16%, rgba(231, 91, 159, .16), transparent 24%),
+        linear-gradient(180deg, #f5effb 0%, #eee6f7 100%);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    button, input, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .app-header {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 28px 18px 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .16em;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 5vw, 40px);
+      letter-spacing: 0;
+      line-height: 1.25;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 9px 12px;
+      border: 1px solid rgba(129, 121, 184, .28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.76);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 10px 24px rgba(78, 68, 105, .08);
+    }
+
+    .fv-hero {
+      max-width: 760px;
+      margin: 12px 0 14px;
+      padding: 0;
+    }
+
+    .fv-hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .progress {
+      max-width: 680px;
+      margin: 8px auto 22px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr auto;
+      align-items: center;
+    }
+
+    .progress i { height: 1px; background: #ddd6e8; }
+    .progress-step {
+      border: 0;
+      background: transparent;
+      color: #9992a6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .progress-step span {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e9e3f1;
+      color: #8b84a0;
+    }
+
+    .progress-step.is-active,
+    .progress-step.is-done { color: var(--accent-dark); }
+    .progress-step.is-active span,
+    .progress-step.is-done span { background: var(--accent); color: #fff; }
+
+    .page-shell {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 18px 90px;
+    }
+
+    .screen[hidden] { display: none !important; }
+    .screen { animation: fade .22s ease both; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .screen-heading {
+      max-width: 720px;
+      margin: 0 auto 22px;
+      text-align: center;
+    }
+
+    .screen-step {
+      margin: 0 0 7px;
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .16em;
+    }
+
+    .screen-heading h2 {
+      margin-bottom: 8px;
+      font-size: clamp(24px, 5vw, 34px);
+      line-height: 1.35;
+    }
+
+    .screen-heading p:last-child {
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 600;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .template-card {
+      position: relative;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      box-shadow: 0 12px 34px rgba(85,77,106,.14);
+      cursor: pointer;
+    }
+
+    .template-card.is-selected {
+      border-color: var(--pink-strong);
+      border-width: 3px;
+      background:
+        linear-gradient(135deg, rgba(255, 232, 243, .98), rgba(255, 215, 234, .96)),
+        #ffe7f2;
+      box-shadow: 0 0 0 5px rgba(231, 91, 159, .22), 0 18px 44px rgba(180, 76, 130, .22);
+    }
+
+    .template-thumb {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #e7e1ee;
+    }
+
+    .template-thumb img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .template-count {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.86);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(60, 52, 80, .12);
+    }
+
+    .template-selected-label {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: none;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--pink-strong);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(60, 52, 80, .18);
+    }
+
+    .template-card.is-selected .template-selected-label { display: inline-flex; }
+
+    .template-info {
+      padding: 12px 4px 2px;
+    }
+
+    .template-info strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .template-info small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .input-layout {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .section-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      background: var(--card);
+      box-shadow: 0 12px 34px rgba(85,77,106,.07);
+    }
+
+    .selected-template-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+    }
+
+    .selected-template-card span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .selected-template-card strong { font-size: 17px; }
+
+    .text-button {
+      border: 0;
+      background: transparent;
+      color: var(--accent-dark);
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 16px;
+    }
+
+    .section-title-row h3 { margin: 0; font-size: 18px; }
+
+    .mini-step {
+      width: 30px;
+      height: 30px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #efebf7;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .upload-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bulk-upload {
+      position: relative;
+      display: grid;
+      gap: 4px;
+      min-height: 68px;
+      margin-bottom: 14px;
+      border: 2px solid rgba(231,91,159,.34);
+      border-radius: 8px;
+      padding: 13px 16px;
+      background: linear-gradient(135deg, #ffe7f2, #fff7fb);
+      color: var(--pink-strong);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .bulk-upload input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .bulk-upload small {
+      color: #8f6b82;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .upload-box {
+      position: relative;
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+      border: 1.5px dashed #cfc7df;
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,.68);
+      cursor: pointer;
+    }
+
+    .upload-box input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #eee9f8;
+      color: var(--accent-dark);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .upload-main {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .upload-note {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .upload-state {
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field span {
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      background: #fff;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .field small {
+      justify-self: end;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .screen-actions,
+    .back-actions {
+      max-width: 760px;
+      margin: 18px auto 0;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .back-actions {
+      margin-top: -8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .primary-button,
+    .secondary-button {
+      min-height: 52px;
+      border-radius: 8px;
+      padding: 14px 22px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .primary-button {
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(101,95,159,.22);
+    }
+
+    .secondary-button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      color: var(--accent-dark);
+    }
+
+    .primary-button:disabled {
+      opacity: .52;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .danger-button {
+      min-height: 52px;
+      border: 1px solid rgba(231, 91, 159, .3);
+      border-radius: 8px;
+      padding: 14px 22px;
+      background: #fff7fb;
+      color: var(--pink-strong);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .preview-layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) minmax(280px, 1fr);
+      gap: 28px;
+      align-items: start;
+      justify-content: center;
+    }
+
+    .preview-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+
+    .preview-label small {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .phone-frame {
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    #previewCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      aspect-ratio: 9 / 16;
+      background: #fff;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    #previewCanvas:active { cursor: grabbing; }
+
+    .drag-hint {
+      margin: 12px 0 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .adjust-column {
+      position: sticky;
+      top: 14px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .photo-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .photo-tab {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 10px 14px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .photo-tab.is-active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .range-field {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 48px;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .range-field input {
+      width: 100%;
+      min-height: 42px;
+      accent-color: var(--accent);
+    }
+
+    .range-field input::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .range-field input::-webkit-slider-thumb {
+      width: 28px;
+      height: 28px;
+      margin-top: -10px;
+    }
+
+    .quick-adjust {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 8px 0 2px;
+    }
+
+    .quick-adjust button {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .quick-adjust button:active {
+      transform: translateY(1px);
+      background: #f2eef8;
+    }
+
+    .preview-summary dl { margin: 0; }
+    .preview-summary dl > div {
+      padding: 9px 0;
+      border-bottom: 1px solid #eeebf3;
+    }
+    .preview-summary dt {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .preview-summary dd {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .save-button { width: 100%; }
+
+    .feedback-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .feedback-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 50px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background: #fff7fb;
+      border: 1px solid rgba(231, 91, 159, .34);
+      color: var(--pink-strong);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .feedback-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.72);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
+    .feedback-check input {
+      width: 20px;
+      height: 20px;
+      margin: 1px 0 0;
+      accent-color: var(--pink-strong);
+    }
+
+    .feedback-status {
+      margin-top: 10px;
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      z-index: 30;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      max-width: min(92vw, 460px);
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(58,50,72,.96);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 820px) {
+      .template-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+      .template-card { display: grid; grid-template-columns: 118px 1fr; gap: 14px; align-items: center; }
+      .template-thumb { width: 118px; }
+      .template-info { padding: 0; }
+      .preview-layout { grid-template-columns: 1fr; }
+      .adjust-column { position: static; max-width: 520px; width: 100%; margin: 0 auto; }
+    }
+
+    @media (max-width: 560px) {
+      .app-header { padding-top: 24px; }
+      .badge { display: none; }
+      h1 { font-size: 28px; }
+      .sub { font-size: 14px; }
+      .progress { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+      .progress i { display: none; }
+      .progress-step { justify-content: center; flex-direction: column; gap: 4px; padding: 4px; font-size: 11px; }
+      .template-card { grid-template-columns: 100px 1fr; }
+      .template-thumb { width: 100px; }
+      .section-card { padding: 18px; }
+      .upload-box { grid-template-columns: 40px 1fr; }
+      .upload-state { grid-column: 2; }
+      .screen-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 12;
+        margin-left: -18px;
+        margin-right: -18px;
+        padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+        background: rgba(247,243,251,.94);
+        border-top: 1px solid rgba(230,224,238,.95);
+        backdrop-filter: blur(12px);
+      }
+      .primary-button, .secondary-button { flex: 1; padding-left: 12px; padding-right: 12px; }
+      .back-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .back-actions .secondary-button,
+      .back-actions .danger-button {
+        width: 100%;
+        min-height: 48px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      .back-actions .danger-button { grid-column: 1 / -1; }
+      .preview-label small { display: none; }
+      .range-field { grid-template-columns: 46px 1fr; }
+      .photo-tab { min-height: 48px; padding-left: 16px; padding-right: 16px; font-size: 13px; }
+      .quick-adjust button { min-height: 50px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">OSHIKATSU STORY MAKER</p>
+      <section class="fv-hero" aria-label="推し活ストーリーメーカーの紹介画像">
+        <img src="assets/fv.jpg" alt="推し活ストーリーメーカー" />
+      </section>
+      <h1>モニター用テンプレを<br />作る</h1>
+      <p class="sub">写真を入れて作成後、感想フォーム回答で保存できます。</p>
+    </div>
+    <div class="badge">モニター版</div>
+  </header>
+
+  <nav class="progress" aria-label="作成ステップ">
+    <button class="progress-step" type="button" data-go="templates"><span>1</span>テンプレ</button>
+    <i></i>
+    <button class="progress-step" type="button" data-go="input"><span>2</span>写真</button>
+    <i></i>
+    <button class="progress-step" type="button" data-go="preview"><span>3</span>調整・保存</button>
+  </nav>
+
+  <main class="page-shell">
+    <section id="templateScreen" class="screen" aria-labelledby="templateHeading">
+      <div class="screen-heading">
+        <p class="screen-step">STEP 1</p>
+        <h2 id="templateHeading">テンプレを選ぶ</h2>
+        <p>3つのテンプレから選べます。完成後は感想フォーム回答で保存できます。</p>
+      </div>
+      <div id="templateGrid" class="template-grid"></div>
+      <div class="screen-actions">
+        <button id="toInputBtn" class="primary-button" type="button">このテンプレで作る</button>
+      </div>
+    </section>
+
+    <section id="inputScreen" class="screen" aria-labelledby="inputHeading" hidden>
+      <div class="screen-heading">
+        <p class="screen-step">STEP 2</p>
+        <h2 id="inputHeading">写真を入れる</h2>
+        <p>まとめて選ぶと、写真1から順番に入ります。</p>
+      </div>
+
+      <div class="input-layout">
+        <div class="section-card selected-template-card">
+          <div>
+            <span>選択中のテンプレ</span>
+            <strong id="selectedTemplateName"></strong>
+          </div>
+          <button id="changeTemplateBtn" class="secondary-button" type="button">テンプレを選び直す</button>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title-row"><span class="mini-step">1</span><h3>写真を選ぶ</h3></div>
+          <label class="bulk-upload" for="bulkPhotoInput">
+            <input id="bulkPhotoInput" type="file" accept="image/*" multiple />
+            <span>まとめて写真を選ぶ</span>
+            <small>選んだ順に写真枠へ入ります</small>
+          </label>
+          <div id="uploadList" class="upload-list"></div>
+        </div>
+      </div>
+
+      <div class="screen-actions">
+        <button id="backTemplatesBtn" class="secondary-button" type="button">テンプレを選び直す</button>
+        <button id="toPreviewBtn" class="primary-button" type="button">プレビューで確認する</button>
+      </div>
+    </section>
+
+    <section id="previewScreen" class="screen" aria-labelledby="previewHeading" hidden>
+      <div class="screen-heading">
+        <p class="screen-step">STEP 3</p>
+        <h2 id="previewHeading">プレビューで調整する</h2>
+        <p>写真ごとに位置と大きさを整えて保存できます。</p>
+      </div>
+
+      <div class="back-actions">
+        <button id="previewTemplateBtn" class="secondary-button" type="button">テンプレを選び直す</button>
+        <button id="previewInputBtn" class="secondary-button" type="button">写真を選び直す</button>
+        <button id="restartBtn" class="danger-button" type="button">最初からやり直す</button>
+      </div>
+
+      <div class="preview-layout">
+        <div>
+          <div class="preview-label"><span>完成イメージ</span><small>Instagram Story 9:16</small></div>
+          <div class="phone-frame">
+            <canvas id="previewCanvas" width="720" height="1280" aria-label="完成プレビュー"></canvas>
+          </div>
+          <p class="drag-hint">プレビュー上で写真を動かして位置調整できます。</p>
+        </div>
+
+        <div class="adjust-column">
+          <div class="section-card">
+            <div class="section-title-row"><span class="mini-step">1</span><h3>写真を調整</h3></div>
+            <div id="photoTabs" class="photo-tabs"></div>
+            <label class="range-field"><span>拡大</span><input id="zoomInput" type="range" min="1" max="2.8" step="0.01" value="1" /></label>
+            <label class="range-field"><span>左右</span><input id="xInput" type="range" min="-1" max="1" step="0.01" value="0" /></label>
+            <label class="range-field"><span>上下</span><input id="yInput" type="range" min="-1" max="1" step="0.01" value="0" /></label>
+            <div class="quick-adjust" aria-label="写真のかんたん調整">
+              <button type="button" data-adjust="zoom-out">小さく</button>
+              <button type="button" data-adjust="up">上へ</button>
+              <button type="button" data-adjust="zoom-in">大きく</button>
+              <button type="button" data-adjust="left">左へ</button>
+              <button type="button" data-adjust="down">下へ</button>
+              <button type="button" data-adjust="right">右へ</button>
+            </div>
+            <button id="resetPhotoBtn" class="text-button" type="button">この写真の位置をリセット</button>
+          </div>
+
+          <div class="section-card preview-summary">
+            <div class="section-title-row"><span class="mini-step">2</span><h3>内容を確認</h3></div>
+            <dl>
+              <div><dt>テンプレ</dt><dd id="summaryTemplate"></dd></div>
+              <div><dt>写真</dt><dd id="summaryPhotos"></dd></div>
+            </dl>
+            <button id="editInputBtn" class="secondary-button" type="button">写真を選び直す</button>
+          </div>
+
+          <div class="section-card feedback-card">
+            <div class="section-title-row"><span class="mini-step">3</span><h3>感想フォーム</h3></div>
+            <p>完成画像を保存する前に、モニター用の感想フォームへ回答してください。</p>
+            <a id="feedbackFormLink" class="feedback-link" href="#" target="_blank" rel="noopener">感想フォームを開く</a>
+            <label class="feedback-check">
+              <input id="feedbackDone" type="checkbox" />
+              <span>感想フォームに回答しました</span>
+            </label>
+            <div id="feedbackStatus" class="feedback-status" role="status" aria-live="polite"></div>
+          </div>
+
+          <button id="downloadBtn" class="primary-button save-button" type="button" disabled>感想フォーム回答後に保存する</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const FEEDBACK_FORM_URL = '';
+
+    const templates = [
+      {
+        id: 'four',
+        name: '4枚テンプレ',
+        description: '縦に並ぶ4枚写真',
+        count: 4,
+        src: 'assets/templates/template-4.jpg',
+        slots: [
+          { type: 'poly', bleed: 8, points: [[368, 126], [650, 218], [590, 405], [307, 314]] },
+          { type: 'poly', bleed: 8, points: [[292, 368], [575, 459], [515, 646], [232, 555]] },
+          { type: 'poly', bleed: 8, points: [[218, 601], [501, 694], [441, 879], [157, 788]] },
+          { type: 'poly', bleed: 8, points: [[138, 845], [421, 937], [360, 1123], [77, 1030]] }
+        ]
+      },
+      {
+        id: 'three',
+        name: '3枚テンプレ',
+        description: '丸写真をつなぐ旅風',
+        count: 3,
+        src: 'assets/templates/template-3.jpg',
+        slots: [
+          { type: 'circle', x: 220, y: 259, r: 168 },
+          { type: 'circle', x: 502, y: 640, r: 168 },
+          { type: 'circle', x: 218, y: 1050, r: 168 }
+        ]
+      },
+      {
+        id: 'one',
+        name: '1枚テンプレ',
+        description: '大きく見せるチケット風',
+        count: 1,
+        src: 'assets/templates/template-1.jpg',
+        slots: [
+          { type: 'roundRect', x: 174, y: 302, w: 488, h: 626, radius: 0 }
+        ]
+      }
+    ];
+
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const els = {
+      screens: {
+        templates: document.getElementById('templateScreen'),
+        input: document.getElementById('inputScreen'),
+        preview: document.getElementById('previewScreen')
+      },
+      progress: Array.from(document.querySelectorAll('.progress-step')),
+      templateGrid: document.getElementById('templateGrid'),
+      toInputBtn: document.getElementById('toInputBtn'),
+      selectedTemplateName: document.getElementById('selectedTemplateName'),
+      bulkPhotoInput: document.getElementById('bulkPhotoInput'),
+      uploadList: document.getElementById('uploadList'),
+      backTemplatesBtn: document.getElementById('backTemplatesBtn'),
+      changeTemplateBtn: document.getElementById('changeTemplateBtn'),
+      toPreviewBtn: document.getElementById('toPreviewBtn'),
+      photoTabs: document.getElementById('photoTabs'),
+      zoomInput: document.getElementById('zoomInput'),
+      xInput: document.getElementById('xInput'),
+      yInput: document.getElementById('yInput'),
+      resetPhotoBtn: document.getElementById('resetPhotoBtn'),
+      editInputBtn: document.getElementById('editInputBtn'),
+      previewTemplateBtn: document.getElementById('previewTemplateBtn'),
+      previewInputBtn: document.getElementById('previewInputBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      summaryTemplate: document.getElementById('summaryTemplate'),
+      summaryPhotos: document.getElementById('summaryPhotos'),
+      feedbackFormLink: document.getElementById('feedbackFormLink'),
+      feedbackDone: document.getElementById('feedbackDone'),
+      feedbackStatus: document.getElementById('feedbackStatus'),
+      downloadBtn: document.getElementById('downloadBtn'),
+      toast: document.getElementById('toast')
+    };
+
+    const imageCache = new Map();
+    const state = {
+      stage: 'templates',
+      templateId: 'four',
+      photos: [],
+      activePhoto: 0,
+      drag: null
+    };
+
+    const stageOrder = ['templates', 'input', 'preview'];
+
+    function currentTemplate() {
+      return templates.find(template => template.id === state.templateId);
+    }
+
+    function emptyPhoto() {
+      return { fileName: '', url: '', image: null, zoom: 1, x: 0, y: 0 };
+    }
+
+    function ensurePhotoSlots() {
+      const count = currentTemplate().count;
+      while (state.photos.length < count) state.photos.push(emptyPhoto());
+      if (state.photos.length > count) state.photos = state.photos.slice(0, count);
+      if (state.activePhoto >= count) state.activePhoto = 0;
+    }
+
+    function loadImage(src) {
+      if (imageCache.has(src)) return imageCache.get(src);
+      const promise = new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+      imageCache.set(src, promise);
+      return promise;
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add('is-visible');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove('is-visible'), 1800);
+    }
+
+    function renderTemplates() {
+      els.templateGrid.innerHTML = '';
+      templates.forEach(template => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `template-card${template.id === state.templateId ? ' is-selected' : ''}`;
+        card.innerHTML = `
+          <div class="template-thumb">
+            <img src="${template.src}" alt="${template.name}の見本" />
+            <span class="template-count">写真${template.count}枚</span>
+            <span class="template-selected-label">選択中</span>
+          </div>
+          <div class="template-info">
+            <strong>${template.name}</strong>
+            <small>${template.description}</small>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          state.templateId = template.id;
+          ensurePhotoSlots();
+          renderTemplates();
+          renderInput();
+          renderPreviewControls();
+          render();
+        });
+        els.templateGrid.appendChild(card);
+      });
+    }
+
+    function scrollToStage(stage) {
+      const target = els.screens[stage] || els.screens.templates;
+      const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - 12);
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+
+    function setStage(stage, shouldScroll = true) {
+      if (stage === 'preview' && !canOpenPreview()) return;
+      state.stage = stage;
+      Object.entries(els.screens).forEach(([key, screen]) => {
+        screen.hidden = key !== stage;
+      });
+      const activeIndex = stageOrder.indexOf(stage);
+      els.progress.forEach(button => {
+        const step = button.dataset.go;
+        const stepIndex = stageOrder.indexOf(step);
+        button.classList.toggle('is-active', step === stage);
+        button.classList.toggle('is-done', stepIndex < activeIndex);
+      });
+      if (stage === 'input') renderInput();
+      if (stage === 'preview') {
+        renderPreviewControls();
+        updateSummary();
+        render();
+        syncDownloadGate();
+      }
+      if (shouldScroll) scrollToStage(stage);
+    }
+
+    function renderInput() {
+      const template = currentTemplate();
+      ensurePhotoSlots();
+      els.selectedTemplateName.textContent = `${template.name}（写真${template.count}枚）`;
+      els.uploadList.innerHTML = '';
+      state.photos.forEach((photo, index) => {
+        const label = document.createElement('label');
+        label.className = 'upload-box';
+        label.setAttribute('for', `photoInput${index}`);
+        label.innerHTML = `
+          <input id="photoInput${index}" type="file" accept="image/*" data-index="${index}" />
+          <span class="upload-icon">${index + 1}</span>
+          <span>
+            <span class="upload-main">写真${index + 1}をアップロード</span>
+            <span class="upload-note">${photo.fileName || '縦・横どちらでもOK'}</span>
+          </span>
+          <span class="upload-state">${photo.image ? '選択済み' : '未選択'}</span>
+        `;
+        const input = label.querySelector('input');
+        input.addEventListener('change', event => loadPhoto(index, event.target.files?.[0]));
+        els.uploadList.appendChild(label);
+      });
+    }
+
+    function loadPhoto(index, file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('画像ファイルを選んでください');
+        return;
+      }
+      const photo = state.photos[index];
+      if (photo.url) URL.revokeObjectURL(photo.url);
+      photo.url = URL.createObjectURL(file);
+      photo.fileName = file.name;
+      photo.zoom = 1;
+      photo.x = 0;
+      photo.y = 0;
+      const img = new Image();
+      img.onload = () => {
+        photo.image = img;
+        state.activePhoto = index;
+        renderInput();
+        renderPreviewControls();
+        render();
+        showToast(`写真${index + 1}をセットしました`);
+      };
+      img.src = photo.url;
+    }
+
+    function loadPhotos(files) {
+      Array.from(files || []).slice(0, currentTemplate().count).forEach((file, index) => {
+        loadPhoto(index, file);
+      });
+    }
+
+    function canOpenPreview() {
+      ensurePhotoSlots();
+      const missingIndex = state.photos.findIndex(photo => !photo.image);
+      if (missingIndex >= 0) {
+        showToast(`写真${missingIndex + 1}をアップロードしてください`);
+        return false;
+      }
+      return true;
+    }
+
+    function renderPreviewControls() {
+      ensurePhotoSlots();
+      els.photoTabs.innerHTML = '';
+      state.photos.forEach((photo, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `photo-tab${index === state.activePhoto ? ' is-active' : ''}`;
+        button.textContent = `写真${index + 1}`;
+        button.addEventListener('click', () => {
+          state.activePhoto = index;
+          syncControlsFromPhoto();
+          renderPreviewControls();
+          render();
+        });
+        els.photoTabs.appendChild(button);
+      });
+      syncControlsFromPhoto();
+    }
+
+    function activePhoto() {
+      return state.photos[state.activePhoto] || state.photos[0];
+    }
+
+    function syncControlsFromPhoto() {
+      const photo = activePhoto() || emptyPhoto();
+      els.zoomInput.value = photo.zoom;
+      els.xInput.value = photo.x;
+      els.yInput.value = photo.y;
+    }
+
+    function updateActivePhotoFromControls() {
+      const photo = activePhoto();
+      if (!photo) return;
+      photo.zoom = Number(els.zoomInput.value);
+      photo.x = Number(els.xInput.value);
+      photo.y = Number(els.yInput.value);
+      render();
+    }
+
+    function resetActivePhoto() {
+      const photo = activePhoto();
+      if (!photo) return;
+      photo.zoom = 1;
+      photo.x = 0;
+      photo.y = 0;
+      syncControlsFromPhoto();
+      render();
+      showToast('写真位置をリセットしました');
+    }
+
+    function clearPhotos() {
+      state.photos.forEach(photo => {
+        if (photo.url) URL.revokeObjectURL(photo.url);
+      });
+      state.photos = [];
+      state.activePhoto = 0;
+      ensurePhotoSlots();
+    }
+
+    function restart() {
+      state.templateId = 'four';
+      clearPhotos();
+      els.feedbackDone.checked = false;
+      syncDownloadGate();
+      renderTemplates();
+      renderInput();
+      renderPreviewControls();
+      setStage('templates');
+      render();
+      showToast('最初からやり直せます');
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function quickAdjust(action) {
+      const photo = activePhoto();
+      if (!photo) return;
+      const moveStep = 0.08;
+      const zoomStep = 0.08;
+      if (action === 'left') photo.x = clamp(photo.x - moveStep, -1, 1);
+      if (action === 'right') photo.x = clamp(photo.x + moveStep, -1, 1);
+      if (action === 'up') photo.y = clamp(photo.y - moveStep, -1, 1);
+      if (action === 'down') photo.y = clamp(photo.y + moveStep, -1, 1);
+      if (action === 'zoom-in') photo.zoom = clamp(photo.zoom + zoomStep, 1, 2.8);
+      if (action === 'zoom-out') photo.zoom = clamp(photo.zoom - zoomStep, 1, 2.8);
+      syncControlsFromPhoto();
+      render();
+    }
+
+    function updateSummary() {
+      const template = currentTemplate();
+      els.summaryTemplate.textContent = template.name;
+      els.summaryPhotos.textContent = `${state.photos.filter(photo => photo.image).length}/${template.count}枚セット済み`;
+    }
+
+    function hasFeedbackFormUrl() {
+      return FEEDBACK_FORM_URL.trim().length > 0;
+    }
+
+    function syncDownloadGate() {
+      const hasUrl = hasFeedbackFormUrl();
+      els.feedbackFormLink.href = hasUrl ? FEEDBACK_FORM_URL : '#';
+      els.feedbackDone.disabled = !hasUrl;
+      els.downloadBtn.disabled = !hasUrl || !els.feedbackDone.checked;
+      els.downloadBtn.textContent = els.downloadBtn.disabled
+        ? '感想フォーム回答後に保存する'
+        : '完成画像を保存する';
+      els.feedbackStatus.textContent = hasUrl
+        ? 'フォーム回答後にチェックすると保存できます。'
+        : '感想フォームURLが未設定です。URL設定後に保存できます。';
+    }
+
+    function roundedRectPath(context, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      context.beginPath();
+      context.moveTo(x + r, y);
+      context.arcTo(x + width, y, x + width, y + height, r);
+      context.arcTo(x + width, y + height, x, y + height, r);
+      context.arcTo(x, y + height, x, y, r);
+      context.arcTo(x, y, x + width, y, r);
+      context.closePath();
+    }
+
+    function drawCover(image, width, height, photo) {
+      const imageRatio = image.width / image.height;
+      const slotRatio = width / height;
+      let drawWidth;
+      let drawHeight;
+      if (imageRatio > slotRatio) {
+        drawHeight = height * photo.zoom;
+        drawWidth = drawHeight * imageRatio;
+      } else {
+        drawWidth = width * photo.zoom;
+        drawHeight = drawWidth / imageRatio;
+      }
+      const dx = -drawWidth / 2 + photo.x * width * .45;
+      const dy = -drawHeight / 2 + photo.y * height * .45;
+      ctx.drawImage(image, dx, dy, drawWidth, drawHeight);
+    }
+
+    function distanceBetween(a, b) {
+      return Math.hypot(b[0] - a[0], b[1] - a[1]);
+    }
+
+    function expandPolygon(points, amount = 0) {
+      if (!amount) return points;
+      const center = points.reduce((sum, point) => ({
+        x: sum.x + point[0] / points.length,
+        y: sum.y + point[1] / points.length
+      }), { x: 0, y: 0 });
+      return points.map(([x, y]) => {
+        const dx = x - center.x;
+        const dy = y - center.y;
+        const length = Math.hypot(dx, dy) || 1;
+        return [
+          x + (dx / length) * amount,
+          y + (dy / length) * amount
+        ];
+      });
+    }
+
+    function drawPhotoInSlot(photo, slot) {
+      if (!photo?.image) return;
+      ctx.save();
+      if (slot.type === 'rect') {
+        ctx.translate(slot.x, slot.y);
+        ctx.rotate(slot.rotate || 0);
+        ctx.beginPath();
+        ctx.rect(-slot.w / 2, -slot.h / 2, slot.w, slot.h);
+        ctx.clip();
+        drawCover(photo.image, slot.w, slot.h, photo);
+      }
+      if (slot.type === 'circle') {
+        ctx.translate(slot.x, slot.y);
+        ctx.beginPath();
+        ctx.arc(0, 0, slot.r, 0, Math.PI * 2);
+        ctx.clip();
+        drawCover(photo.image, slot.r * 2, slot.r * 2, photo);
+      }
+      if (slot.type === 'roundRect') {
+        ctx.translate(slot.x + slot.w / 2, slot.y + slot.h / 2);
+        roundedRectPath(ctx, -slot.w / 2, -slot.h / 2, slot.w, slot.h, slot.radius || 0);
+        ctx.clip();
+        drawCover(photo.image, slot.w, slot.h, photo);
+      }
+      if (slot.type === 'poly') {
+        const points = expandPolygon(slot.points, slot.bleed || 0);
+        const [topLeft, topRight, bottomRight, bottomLeft] = points;
+        const centerX = points.reduce((sum, point) => sum + point[0], 0) / points.length;
+        const centerY = points.reduce((sum, point) => sum + point[1], 0) / points.length;
+        const width = (distanceBetween(topLeft, topRight) + distanceBetween(bottomLeft, bottomRight)) / 2;
+        const height = (distanceBetween(topLeft, bottomLeft) + distanceBetween(topRight, bottomRight)) / 2;
+        const angle = Math.atan2(topRight[1] - topLeft[1], topRight[0] - topLeft[0]);
+        ctx.beginPath();
+        points.forEach(([x, y], index) => {
+          if (index === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.clip();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(angle);
+        drawCover(photo.image, width, height, photo);
+      }
+      ctx.restore();
+    }
+
+    async function render() {
+      const template = currentTemplate();
+      const bg = await loadImage(template.src);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      template.slots.forEach((slot, index) => drawPhotoInSlot(state.photos[index], slot));
+      updateSummary();
+    }
+
+    function pointFromEvent(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (canvas.width / rect.width),
+        y: (event.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function startDrag(event) {
+      if (state.stage !== 'preview') return;
+      const photo = activePhoto();
+      if (!photo?.image) return;
+      const point = pointFromEvent(event);
+      state.drag = { startX: point.x, startY: point.y, originalX: photo.x, originalY: photo.y };
+      canvas.setPointerCapture(event.pointerId);
+    }
+
+    function moveDrag(event) {
+      if (!state.drag) return;
+      const point = pointFromEvent(event);
+      const photo = activePhoto();
+      photo.x = Math.max(-1, Math.min(1, state.drag.originalX + (point.x - state.drag.startX) / 240));
+      photo.y = Math.max(-1, Math.min(1, state.drag.originalY + (point.y - state.drag.startY) / 240));
+      syncControlsFromPhoto();
+      render();
+    }
+
+    function stopDrag(event) {
+      if (!state.drag) return;
+      state.drag = null;
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    }
+
+    function downloadImage() {
+      if (!hasFeedbackFormUrl()) {
+        showToast('感想フォームURLを設定してください');
+        return;
+      }
+      if (!els.feedbackDone.checked) {
+        showToast('感想フォーム回答後に保存できます');
+        return;
+      }
+      render().then(() => {
+        canvas.toBlob(blob => {
+          if (!blob) {
+            showToast('保存に失敗しました');
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+          link.href = url;
+          link.download = `oshikatsu-monitor-${currentTemplate().id}-${stamp}.png`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+          showToast('完成画像を保存しました');
+        }, 'image/png');
+      });
+    }
+
+    els.toInputBtn.addEventListener('click', () => setStage('input'));
+    els.backTemplatesBtn.addEventListener('click', () => setStage('templates'));
+    els.changeTemplateBtn.addEventListener('click', () => setStage('templates'));
+    els.previewTemplateBtn.addEventListener('click', () => setStage('templates'));
+    els.previewInputBtn.addEventListener('click', () => setStage('input'));
+    els.toPreviewBtn.addEventListener('click', () => { if (canOpenPreview()) setStage('preview'); });
+    els.editInputBtn.addEventListener('click', () => setStage('input'));
+    els.restartBtn.addEventListener('click', restart);
+    els.feedbackFormLink.addEventListener('click', event => {
+      if (!hasFeedbackFormUrl()) {
+        event.preventDefault();
+        showToast('感想フォームURLを設定してください');
+      }
+    });
+    els.feedbackDone.addEventListener('change', syncDownloadGate);
+    els.bulkPhotoInput.addEventListener('change', event => loadPhotos(event.target.files));
+    [els.zoomInput, els.xInput, els.yInput].forEach(input => input.addEventListener('input', updateActivePhotoFromControls));
+    els.resetPhotoBtn.addEventListener('click', resetActivePhoto);
+    document.querySelectorAll('[data-adjust]').forEach(button => {
+      button.addEventListener('click', () => quickAdjust(button.dataset.adjust));
+    });
+    els.downloadBtn.addEventListener('click', downloadImage);
+    canvas.addEventListener('pointerdown', startDrag);
+    canvas.addEventListener('pointermove', moveDrag);
+    canvas.addEventListener('pointerup', stopDrag);
+    canvas.addEventListener('pointercancel', stopDrag);
+    els.progress.forEach(button => button.addEventListener('click', () => setStage(button.dataset.go)));
+
+    renderTemplates();
+    ensurePhotoSlots();
+    syncDownloadGate();
+    setStage('templates', false);
+    loadImage(currentTemplate().src).then(render);
+  </script>
+</body>
+</html>
