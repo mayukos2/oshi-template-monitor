@@ -20,3 +20,10 @@ const FEEDBACK_FORM_URL = 'https://forms.gle/xxxxxxxxxxxx';
 
 厳密に「本当に回答済みか」を判定するには、Google Apps Scriptなどの追加連携が必要です。
 現状は「フォームを開く -> 回答しましたにチェック -> 保存解放」の簡易版です。
+
+権利リスクチェック:
+- 新しいテンプレ画像・サンプル画像・FV画像を追加するときは、先に assets/pending/ に置いてください。
+- metadata/rights-metadata.json に必須メタデータを追加してください。
+- 公開前に npm run rights:check を実行してください。
+- low のみ公開対象にできます。medium は人間レビュー必須、high は公開禁止です。
+- 詳細は docs/rights-check.md を確認してください。
